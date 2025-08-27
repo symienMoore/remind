@@ -3,15 +3,16 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"server/config/config"
-	"server/routes/routes"
+	"remind/server/config"
+	"remind/server/routes"
 )
 
 func main() {
 
 	config.loadEnv()
 	r := gin.Default()
-	routes.RegisterRoutes(r)
+	// routes.RegisterRoutes(r)
+	routes.ReminderRoutes(r)
 	// Import your controllers and set up routes here.
 	// Example:
 	// userController := controllers.NewUserController()
