@@ -3,15 +3,15 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"server/config/config"
-	"server/routes/routes"
+	"remind/server/config"
+	"remind/server/routes"
 )
 
 func main() {
-
-	config.loadEnv()
+	config.LoadEnv()
 	r := gin.Default()
-	routes.RegisterRoutes(r)
+	// routes.RegisterRoutes(r)
+	routes.ReminderRoutes(r)
 	// Import your controllers and set up routes here.
 	// Example:
 	// userController := controllers.NewUserController()
@@ -23,6 +23,12 @@ func main() {
 
 	// You can add more routes for other resources as needed.
 	// e.g. router.GET("/posts", postController.GetPosts)
+
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+		  "message": "pong",
+		})
+	  })
 
 	// Start the server on port 8080
 	if err := r.Run(":8080"); err != nil {
