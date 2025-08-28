@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"os"
 	"remind/server/config"
 	"remind/server/routes"
 )
@@ -53,13 +54,20 @@ func main() {
 		})
 	})
 
-	fmt.Println("🚀 Starting REmind API server on port 8080...")
-	fmt.Println("📱 Health check: http://localhost:8080/ping")
-	fmt.Println("🔗 API endpoints: http://localhost:8080/reminders")
+	// Get port from environment or use default
+	port := "8080"
+	if envPort := os.Getenv("PORT"); envPort != "" {
+		port = envPort
+	}
+
+	fmt.Printf("🚀 Starting REmind API server on port %s...\n", port)
+	fmt.Printf("📱 Health check: http://localhost:%s/ping\n", port)
+	fmt.Printf("🔗 API endpoints: http://localhost:%s/reminders\n", port)
 	fmt.Println("🌐 CORS enabled for cross-origin requests")
 	
-	// Start the server on port 8080
-	if err := r.Run(":8080"); err != nil {
+	// Start the server
+	if err := r.Run(":" + port); err != nil {
 		fmt.Printf("❌ Failed to run server: %v\n", err)
+		os.Exit(1)
 	}
 }

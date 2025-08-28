@@ -13,17 +13,19 @@ COPY . .
 # Build the application
 RUN npm run build -- --configuration production --output-hashing none --output-mode static
 
-# Production stage
-FROM nginx:alpine
+# Production stage - use simple HTTP server
+FROM node:20-alpine
 
-# Copy built files to nginx
-COPY --from=builder /app/dist/ui/browser /usr/share/nginx/html
+# Install http-server globally
+RUN npm install -g http-server
 
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/nginx.conf
+WORKDIR /app
 
-# Expose port 80
-EXPOSE 80
+# Copy built files
+COPY --from=builder /app/dist/ui/browser ./static
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Expose port 8080 (Fly.io expects this)
+EXPOSE 8080
+
+# Start http-server
+CMD ["http-server", "./static", "-p", "8080", "-a", "0.0.0.0", "--cors"]

@@ -23,7 +23,7 @@ primary_region = "iad"
   path = "/"
 
 [processes]
-  app = "npx"
+  app = "http-server"
 
 [deploy]
   release_command = "echo 'Deploying REmind UI'"
