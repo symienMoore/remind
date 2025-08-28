@@ -1,10 +1,10 @@
 package models
 
-import (
-	
-)
+import ()
 
 type Reminder struct {
-	Title string
+	Title       string
+	Description string
+	// createdAt   time.Now()
 
 }
