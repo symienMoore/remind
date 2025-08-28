@@ -1,33 +1,34 @@
-# Multi-stage Dockerfile for REmind app
-# Stage 1: Build Angular UI
-FROM node:20-alpine AS ui-builder
-WORKDIR /app/ui
-COPY ui/package*.json ./
-RUN npm ci
-COPY ui/ ./
-RUN npm run build -- --configuration production --output-hashing none --output-mode static
+# Dockerfile for REmind API Server
+FROM golang:1.25-alpine AS builder
 
-# Stage 2: Build Go server
-FROM golang:1.25-alpine AS server-builder
+# Install git and ca-certificates
+RUN apk --no-cache add git ca-certificates
+
 WORKDIR /app
+
+# Copy go mod files
 COPY server/go.mod server/go.sum ./
 RUN go mod download
+
+# Copy source code
 COPY server/ ./
+
+# Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
-# Stage 3: Final runtime image
+# Final stage
 FROM alpine:latest
+
+# Install ca-certificates for HTTPS requests
 RUN apk --no-cache add ca-certificates
+
 WORKDIR /root/
 
-# Copy the built Go binary
-COPY --from=server-builder /app/main .
-
-# Copy the built Angular app to serve static files
-COPY --from=ui-builder /app/ui/dist/ui/browser /root/ui
+# Copy the binary from builder stage
+COPY --from=builder /app/main .
 
 # Expose port 8080
 EXPOSE 8080
 
-# Run the server
+# Run the binary
 CMD ["./main"]

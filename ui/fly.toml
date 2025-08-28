@@ -1,12 +1,11 @@
-# fly.toml app configuration file for REmind API Server
-app = "remind-api"
+# fly.toml app configuration file for REmind UI
+app = "remind-ui"
 primary_region = "iad"
 
 [build]
 
 [env]
   PORT = "8080"
-  GIN_MODE = "release"
 
 [http_service]
   internal_port = 8080
@@ -21,15 +20,15 @@ primary_region = "iad"
   interval = "30s"
   method = "GET"
   timeout = "5s"
-  path = "/ping"
+  path = "/"
 
 [processes]
-  app = "main"
+  app = "npx"
 
 [deploy]
-  release_command = "echo 'Deploying REmind API Server'"
+  release_command = "echo 'Deploying REmind UI'"
 
 [[vm]]
   cpu_kind = "shared"
   cpus = 1
-  memory_mb = 256
+  memory_mb = 128

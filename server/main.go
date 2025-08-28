@@ -15,45 +15,48 @@ func main() {
 	
 	r := gin.Default()
 	
-	// Add middleware for debugging
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
+	// Add CORS middleware for cross-origin requests
+	r.Use(func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Header("Access-Control-Allow-Headers", "Origin, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+		
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		
+		c.Next()
+	})
 	
-	// API routes should come first
+	// API routes
 	routes.ReminderRoutes(r)
 	
 	// Health check endpoint
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-		  "message": "pong",
+			"message": "pong",
+			"service": "remind-api",
+			"status": "healthy",
 		})
 	})
-	  
-
-    // Import your controllers and set up routes here.
-    // Example:
-    // userController := controllers.NewUserController()
-    // router.GET("/users", userController.GetUsers)
-    // router.POST("/users", userController.CreateUser)
-    // router.GET("/users/:id", userController.GetUserByID)
-    // router.PUT("/users/:id", userController.UpdateUser)
-    // router.DELETE("/users/:id", userController.UpdateUser)
-
-    // You can add more routes for other resources as needed.
-    // e.g. router.GET("/posts", postController.GetPosts)
-	// Serve static files from the Angular build (after API routes)
-	r.Static("/assets", "./ui/assets")
-	r.StaticFile("/", "./ui/index.html")
-	r.StaticFile("/index.html", "./ui/index.html")
 	
-	// Catch-all route for Angular client-side routing (must be last)
-	r.NoRoute(func(c *gin.Context) {
-		c.File("./ui/index.html")
+	// API info endpoint
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "REmind API Server",
+			"version": "1.0.0",
+			"endpoints": gin.H{
+				"health": "/ping",
+				"reminders": "/reminders",
+			},
+		})
 	})
 
-	fmt.Println("🚀 Starting REmind server on port 8080...")
+	fmt.Println("🚀 Starting REmind API server on port 8080...")
 	fmt.Println("📱 Health check: http://localhost:8080/ping")
 	fmt.Println("🔗 API endpoints: http://localhost:8080/reminders")
+	fmt.Println("🌐 CORS enabled for cross-origin requests")
 	
 	// Start the server on port 8080
 	if err := r.Run(":8080"); err != nil {
