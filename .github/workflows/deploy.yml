@@ -33,7 +33,7 @@ jobs:
       - name: Build UI
         run: |
           cd ui
-          npm run build
+          npm run build -- --configuration production --output-hashing none
 
       - name: Test Go server
         run: |
