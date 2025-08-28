@@ -10,8 +10,13 @@ import (
 func main() {
 	config.LoadEnv()
 	r := gin.Default()
-	// routes.RegisterRoutes(r)
+	
+	// Serve static files from the Angular build
+	r.Static("/", "./ui")
+	
+	// API routes should come before the catch-all route
 	routes.ReminderRoutes(r)
+	
 	// Import your controllers and set up routes here.
 	// Example:
 	// userController := controllers.NewUserController()
@@ -19,7 +24,7 @@ func main() {
 	// router.POST("/users", userController.CreateUser)
 	// router.GET("/users/:id", userController.GetUserByID)
 	// router.PUT("/users/:id", userController.UpdateUser)
-	// router.DELETE("/users/:id", userController.DeleteUser)
+	// router.DELETE("/users/:id", userController.UpdateUser)
 
 	// You can add more routes for other resources as needed.
 	// e.g. router.GET("/posts", postController.GetPosts)
@@ -29,6 +34,11 @@ func main() {
 		  "message": "pong",
 		})
 	  })
+
+	// Catch-all route for Angular client-side routing
+	r.NoRoute(func(c *gin.Context) {
+		c.File("./ui/index.html")
+	})
 
 	// Start the server on port 8080
 	if err := r.Run(":8080"); err != nil {
