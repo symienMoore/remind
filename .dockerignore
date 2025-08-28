@@ -8,8 +8,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Angular (not needed for API)
-ui/
+# Angular
+# Include the UI in build context, but ignore heavy/generated folders
+ui/node_modules
 ui/dist
 ui/.angular
 
