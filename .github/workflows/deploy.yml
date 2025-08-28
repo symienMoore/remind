@@ -33,7 +33,7 @@ jobs:
       - name: Build UI
         run: |
           cd ui
-          npm run build -- --configuration production --output-hashing none --output-mode browser
+          npm run build -- --configuration production --output-hashing none --output-mode static
 
       - name: Test Go server
         run: |

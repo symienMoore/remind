@@ -5,7 +5,7 @@ WORKDIR /app/ui
 COPY ui/package*.json ./
 RUN npm ci
 COPY ui/ ./
-RUN npm run build -- --configuration production --output-hashing none --output-mode browser
+RUN npm run build -- --configuration production --output-hashing none --output-mode static
 
 # Stage 2: Build Go server
 FROM golang:1.25-alpine AS server-builder
