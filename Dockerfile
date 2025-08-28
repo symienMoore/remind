@@ -1,6 +1,6 @@
 # Multi-stage Dockerfile for REmind app
 # Stage 1: Build Angular UI
-FROM node:latest-alpine AS ui-builder
+FROM node:20-alpine AS ui-builder
 WORKDIR /app/ui
 COPY ui/package*.json ./
 RUN npm ci
