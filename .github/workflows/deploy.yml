@@ -2,7 +2,7 @@ name: Deploy to Fly.io
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev, qa ]
   workflow_dispatch:
 
 jobs:
@@ -57,15 +57,26 @@ jobs:
       - name: Setup Fly.io
         uses: superfly/flyctl-actions/setup-flyctl@master
 
+      - name: Determine environment
+        id: env
+        run: |
+          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
+            echo "app=remind-api" >> $GITHUB_OUTPUT
+          elif [[ "${GITHUB_REF##*/}" == "dev" ]]; then
+            echo "app=remind-api-dev" >> $GITHUB_OUTPUT
+          else
+            echo "app=remind-api-qa" >> $GITHUB_OUTPUT
+          fi
+
       - name: Deploy API to Fly.io
-        run: flyctl deploy --app remind-api --remote-only
+        run: flyctl deploy --app ${{ steps.env.outputs.app }} --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
       - name: Verify API deployment
         run: |
           sleep 30
-          flyctl status --app remind-api
+          flyctl status --app ${{ steps.env.outputs.app }}
 
   deploy-ui:
     name: Deploy UI
@@ -78,12 +89,23 @@ jobs:
       - name: Setup Fly.io
         uses: superfly/flyctl-actions/setup-flyctl@master
 
+      - name: Determine environment
+        id: env
+        run: |
+          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
+            echo "app=remind-ui" >> $GITHUB_OUTPUT
+          elif [[ "${GITHUB_REF##*/}" == "dev" ]]; then
+            echo "app=remind-ui-dev" >> $GITHUB_OUTPUT
+          else
+            echo "app=remind-ui-qa" >> $GITHUB_OUTPUT
+          fi
+
       - name: Deploy UI to Fly.io
-        run: flyctl deploy --app remind-ui --remote-only
+        run: flyctl deploy --app ${{ steps.env.outputs.app }} --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
       - name: Verify UI deployment
         run: |
           sleep 30
-          flyctl status --app remind-ui
+          flyctl status --app ${{ steps.env.outputs.app }}
