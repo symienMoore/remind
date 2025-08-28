@@ -2,13 +2,14 @@
 .git
 .gitignore
 
-# Node.js
+# Node.js (not needed for API)
 node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Angular
+# Angular (not needed for API)
+ui/
 ui/dist
 ui/.angular
 

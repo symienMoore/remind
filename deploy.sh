@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# REmind deployment script for Fly.io
+# REmind deployment script for Fly.io (Separate API and UI)
 set -e
 
-echo "🚀 Deploying REmind to Fly.io..."
+echo "🚀 Deploying REmind to Fly.io (Separate API and UI)..."
 
 # Check if fly CLI is installed
 if ! command -v fly &> /dev/null; then
@@ -12,17 +12,36 @@ if ! command -v fly &> /dev/null; then
     exit 1
 fi
 
-# Check if app exists, create if not
-if ! fly apps list | grep -q "remind"; then
-    echo "📱 Creating new Fly.io app..."
-    fly apps create remind
+# Deploy API Server
+echo "🔧 Deploying API Server..."
+if ! fly apps list | grep -q "remind-api"; then
+    echo "📱 Creating new Fly.io app for API..."
+    fly apps create remind-api
 fi
 
-# Deploy the app
-echo "🔨 Building and deploying..."
-fly deploy
+echo "🚀 Deploying API server..."
+fly deploy --app remind-api
+
+# Deploy UI
+echo "🎨 Deploying UI..."
+if ! fly apps list | grep -q "remind-ui"; then
+    echo "📱 Creating new Fly.io app for UI..."
+    fly apps create remind-ui
+fi
+
+echo "🚀 Deploying UI..."
+fly deploy --app remind-ui
 
 echo "✅ Deployment complete!"
-echo "🌐 Your app is available at: https://remind.fly.dev"
-echo "📊 Monitor your app: fly status"
-echo "📝 View logs: fly logs"
+echo ""
+echo "🌐 Your services are available at:"
+echo "   API Server: https://remind-api.fly.dev"
+echo "   UI: https://remind-ui.fly.dev"
+echo ""
+echo "📊 Monitor your apps:"
+echo "   API: fly status --app remind-api"
+echo "   UI: fly status --app remind-ui"
+echo ""
+echo "📝 View logs:"
+echo "   API: fly logs --app remind-api"
+echo "   UI: fly logs --app remind-ui"
