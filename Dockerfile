@@ -3,9 +3,9 @@
 FROM node:18-alpine AS ui-builder
 WORKDIR /app/ui
 COPY ui/package*.json ./
-RUN npm ci --only=production
+RUN npm ci
 COPY ui/ ./
-RUN npm run build
+RUN npm run build -- --configuration production --output-hashing none
 
 # Stage 2: Build Go server
 FROM golang:1.25-alpine AS server-builder
