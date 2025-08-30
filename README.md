@@ -1,5 +1,5 @@
-# reminder ⚡️
-## a super task list so you and your friends can keep you accountable
+# ⚡️ REmind ⚡️
+## a super task list to keep your friends accountable
 
 ## 😎 upcoming features
 - make reminders draggable

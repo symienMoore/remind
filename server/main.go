@@ -3,14 +3,38 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 	"os"
+	"context"
 	"remind/server/config"
 	"remind/server/routes"
+	"github.com/jackc/pgx/v5"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	config.LoadEnv()
+	err := godotenv.Load()
+	if err != nil{
+		log.Println("no .env file found")
+	}
 	
+	connectString := os.Getenv("DATABASE_URL")
+	if connectString == "" {
+		fmt.Fprintf(os.Stderr, "DATABASE_URL not set\n")
+		os.Exit(1)
+	}
+
+	ctx := context.Background()
+	// Connect to the database
+	conn, err := pgx.Connect(ctx, connectString)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+	defer conn.Close(ctx)
+	fmt.Println("Connection established!!!!")
+
 	// Set Gin to release mode for production
 	gin.SetMode(gin.ReleaseMode)
 	
@@ -64,6 +88,7 @@ func main() {
 	fmt.Printf("📱 Health check: http://localhost:%s/ping\n", port)
 	fmt.Printf("🔗 API endpoints: http://localhost:%s/reminders\n", port)
 	fmt.Println("🌐 CORS enabled for cross-origin requests")
+	
 	
 	// Start the server
 	if err := r.Run(":" + port); err != nil {

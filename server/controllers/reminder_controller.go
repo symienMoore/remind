@@ -3,7 +3,7 @@ package controllers
 import "github.com/gin-gonic/gin"
 
 func GetReminders(c *gin.Context) {
-	c.JSON(200, gin.H{"message": "Get reminders endpoint"})
+//	reminders, err := db
 }
 
 func GetReminderByID(c *gin.Context) {
