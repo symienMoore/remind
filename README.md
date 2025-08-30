@@ -15,6 +15,5 @@
 ## 📒 devlog/todo list
 ### 29-08-2025
 I currently have the backend and front end deployed to fly,
-I am going to get the backend api going first before focusing on ui.
-
-
+I am going to get the backend api going first before focusing on ui. 
+Also updated deployments.
