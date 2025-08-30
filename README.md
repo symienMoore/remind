@@ -2,14 +2,14 @@
 ## a super task list so you and your friends can keep you accountable
 
 ## 😎 upcoming features
-- [ ] make reminders draggable
-- [ ] stream live updates for your friends to see
+- make reminders draggable
+- stream live updates for your friends to see
 
 
 ## 💻 tech stack
-- [ ] go - server/backend
-- [ ] angular 20 - ui
-- [ ] fly.io hosting
+- go - server/backend
+- angular 20 - ui
+- fly.io hosting
 
 
 ## 📒 devlog/todo list
