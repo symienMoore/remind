@@ -17,3 +17,7 @@
 I currently have the backend and front end deployed to fly,
 I am going to get the backend api going first before focusing on ui. 
 Also updated deployments.
+
+### 30-08-2025
+Made updates to the db files in SERVER, simplified some things
+and am working to make it more managable.

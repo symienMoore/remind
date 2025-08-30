@@ -5,10 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"os"
-	"context"
 	"remind/server/config"
+	"remind/server/db"
 	"remind/server/routes"
-	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
 )
 
@@ -19,21 +18,16 @@ func main() {
 		log.Println("no .env file found")
 	}
 	
-	connectString := os.Getenv("DATABASE_URL")
-	if connectString == "" {
-		fmt.Fprintf(os.Stderr, "DATABASE_URL not set\n")
-		os.Exit(1)
+	// Initialize database using GORM
+	if err := db.ConnectDB(); err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
 	}
+	defer db.CloseDB()
 
-	ctx := context.Background()
-	// Connect to the database
-	conn, err := pgx.Connect(ctx, connectString)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
+	// Initialize database schema using GORM AutoMigrate
+	if err := db.InitSchema(); err != nil {
+		log.Fatalf("Failed to initialize database schema: %v", err)
 	}
-	defer conn.Close(ctx)
-	fmt.Println("Connection established!!!!")
 
 	// Set Gin to release mode for production
 	gin.SetMode(gin.ReleaseMode)
@@ -74,6 +68,8 @@ func main() {
 			"endpoints": gin.H{
 				"health": "/ping",
 				"reminders": "/reminders",
+				"search": "/reminders/search?q=<search_term>",
+				"db_stats": "/db/stats",
 			},
 		})
 	})
@@ -88,7 +84,7 @@ func main() {
 	fmt.Printf("📱 Health check: http://localhost:%s/ping\n", port)
 	fmt.Printf("🔗 API endpoints: http://localhost:%s/reminders\n", port)
 	fmt.Println("🌐 CORS enabled for cross-origin requests")
-	
+	fmt.Println("🗄️  Database connected using GORM")
 	
 	// Start the server
 	if err := r.Run(":" + port); err != nil {
