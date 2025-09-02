@@ -3,73 +3,71 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"remind/server/config"
 	"remind/server/db"
 	"remind/server/routes"
-	"github.com/joho/godotenv"
 )
 
 func main() {
 	config.LoadEnv()
 	err := godotenv.Load()
-	if err != nil{
+	if err != nil {
 		log.Println("no .env file found")
 	}
-	
-	// Initialize database using GORM
+
 	if err := db.ConnectDB(); err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 	defer db.CloseDB()
 
-	// Initialize database schema using GORM AutoMigrate
 	if err := db.InitSchema(); err != nil {
 		log.Fatalf("Failed to initialize database schema: %v", err)
 	}
 
-	// Set Gin to release mode for production
 	gin.SetMode(gin.ReleaseMode)
-	
+
 	r := gin.Default()
-	
-	// Add CORS middleware for cross-origin requests
+
+	// CORS
 	r.Use(func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		c.Header("Access-Control-Allow-Headers", "Origin, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-		
+
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
 			return
 		}
-		
+
 		c.Next()
 	})
-	
+
 	// API routes
 	routes.ReminderRoutes(r)
-	
+	routes.UserRoutes(r)
+
 	// Health check endpoint
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
 			"service": "remind-api",
-			"status": "healthy",
+			"status":  "healthy",
 		})
 	})
-	
+
 	// API info endpoint
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "REmind API Server",
 			"version": "1.0.0",
 			"endpoints": gin.H{
-				"health": "/ping",
+				"health":    "/ping",
 				"reminders": "/reminders",
-				"search": "/reminders/search?q=<search_term>",
-				"db_stats": "/db/stats",
+				"search":    "/reminders/search?q=<search_term>",
+				"db_stats":  "/db/stats",
 			},
 		})
 	})
@@ -85,7 +83,7 @@ func main() {
 	fmt.Printf("🔗 API endpoints: http://localhost:%s/reminders\n", port)
 	fmt.Println("🌐 CORS enabled for cross-origin requests")
 	fmt.Println("🗄️  Database connected using GORM")
-	
+
 	// Start the server
 	if err := r.Run(":" + port); err != nil {
 		fmt.Printf("❌ Failed to run server: %v\n", err)

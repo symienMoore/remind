@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"net/http"
-	"strconv"
-	"github.com/gin-gonic/gin"
 	"remind/server/db"
 	"remind/server/models"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 func GetReminders(c *gin.Context) {
@@ -15,7 +16,7 @@ func GetReminders(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, reminders)
 }
 
@@ -84,7 +85,6 @@ func DeleteReminder(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
 		return
 	}
-
 	var reminder models.Reminder
 	result := db.DB.First(&reminder, id)
 	if result.Error != nil {
@@ -105,7 +105,7 @@ func SearchReminders(c *gin.Context) {
 
 	var reminders []models.Reminder
 	searchPattern := "%" + searchTerm + "%"
-	
+
 	result := db.DB.Where("title ILIKE ? OR description ILIKE ?", searchPattern, searchPattern).Find(&reminders)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
@@ -118,7 +118,7 @@ func SearchReminders(c *gin.Context) {
 func GetDatabaseStats(c *gin.Context) {
 	var count int64
 	db.DB.Model(&models.Reminder{}).Count(&count)
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"total_reminders": count,
 		"database_url":    "***",
