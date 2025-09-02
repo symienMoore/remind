@@ -47,7 +47,7 @@ func main() {
 
 	// API routes
 	routes.ReminderRoutes(r)
-	routes.UserRoutes(r)
+	//routes.UserRoutes(r)
 
 	// Health check endpoint
 	r.GET("/ping", func(c *gin.Context) {
