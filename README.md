@@ -21,3 +21,7 @@ Also updated deployments.
 ### 30-08-2025
 Made updates to the db files in SERVER, simplified some things
 and am working to make it more managable.
+
+### 02-09-2025
+made some small changes to api models and routes, I need to start grouping routes,
+add middleware and start working on authentication.
