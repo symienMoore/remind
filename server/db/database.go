@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"remind/server/models"
+
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"remind/server/models"
 )
 
 var DB *gorm.DB
 
-// ConnectDB initializes the database connection using GORM
 func ConnectDB() error {
 	err := godotenv.Load()
 	if err != nil {
@@ -34,12 +34,14 @@ func ConnectDB() error {
 	return nil
 }
 
-// CloseDB closes the database connection
 func CloseDB() {
 	if DB != nil {
 		sqlDB, err := DB.DB()
 		if err == nil {
-			sqlDB.Close()
+			err := sqlDB.Close()
+			if err != nil {
+				return
+			}
 			log.Println("Database connection closed")
 		}
 	}
@@ -60,4 +62,3 @@ func InitSchema() error {
 	log.Println("Database schema initialized successfully")
 	return nil
 }
-
