@@ -25,3 +25,8 @@ and am working to make it more managable.
 ### 02-09-2025
 made some small changes to api models and routes, I need to start grouping routes,
 add middleware and start working on authentication.
+
+### 10-09-2025
+made a small update to the landing page, I need to create a login or sign up form
+and also diagram the flow of the application. I will be rolling my own auth for this
+so I need to catch up on best practices.
