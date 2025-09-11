@@ -30,3 +30,4 @@ add middleware and start working on authentication.
 made a small update to the landing page, I need to create a login or sign up form
 and also diagram the flow of the application. I will be rolling my own auth for this
 so I need to catch up on best practices.
+
