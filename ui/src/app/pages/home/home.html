@@ -1,15 +1,18 @@
-<div class="flex items-center h-screen">
-    <div class="w-1/2 h-screen bg-gray-200 flex flex-col items-center justify-center">
+<div class="flex h-screen">
+    <div class="w-1/2 h-screen bg-indigo-500 flex flex-col items-center justify-center text-white">
       <h1 class="text-xl font-bold">Welcome to Remind!</h1>
       <p>The best reminder app in the world.</p>
     </div>
-    <div>
-      <form action="" class="flex flex-col items-center justify-center">
-        <input type="text" required placeholder="someone@example.com">
-        <input type="password" required placeholder="Password">
-        <button type="submit">Login</button>
+    <div class="">
+      <p>{{loginForm.status}}</p>
+      <form class="w-64 flex flex-col items-center justify-center m-0" (ngSubmit)="doUserLogin()" [formGroup]="loginForm" class="flex flex-col items-center justify-center">
+        <input class="border border-indigo-500 rounded-sm p-2" formControlName="email" name="email" type="text" required placeholder="someone@example.com">
+        @if(loginForm.controls.email.invalid && loginForm.controls.email.touched){<div class="text-red-500 font-bold">Email is required</div>}
+        <input formControlName="password" name="password" type="password" required placeholder="Password">
+         @if(loginForm.controls.password.invalid && loginForm.controls.password.touched){<div class="text-red-500 font-bold">Password is required</div>}
+        <button [disabled]="loginForm.invalid" type="submit">Login</button>
       </form>
     </div>
-  </div>
+</div>
 
 
