@@ -10,8 +10,43 @@ import (
 
 
 func LogInUser(c *gin.Context) {
+	var loginRequest struct {
+		Username string `json:"username" binding:"required"`
+		Password string `json:"password" binding:"required"`
+	}
 
+	if err := c.ShouldBindJSON(&loginRequest); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	var user models.User
+	result := db.DB.Where("username = ?", loginRequest.Username).First(&user)
+	if result.Error != nil {
+		c.JSON(401, gin.H{"error": "Invalid username or password"})
+		return
+	}
+	if !user.IsActive {
+		c.JSON(401, gin.H{"error": "Account is deactivated"})
+		return
+	}
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
+	if err != nil {
+		c.JSON(401, gin.H{"error": "Invalid username or password"})
+		return
+	}
+	token, err := auth.GenerateJWT(user.Username)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to generate token"})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "Login successful",
+		"token":   token,
+		"user":    user,
+	})
 }
+
 
 
 

@@ -6,6 +6,7 @@ import (
 )
 
 func ReminderRoutes(r *gin.Engine) {
+	// add middleware
 	reminderGroup := r.Group("/reminders")
 	{
 		reminderGroup.GET("/", controllers.GetReminders)
@@ -24,6 +25,7 @@ func ReminderRoutes(r *gin.Engine) {
 	AuthGroup := r.Group("/auth")
 	{
 		AuthGroup.POST("/signup", controllers.RegisterUser)
+		AuthGroup.POST("/login", controllers.LogInUser)
 	}
 
 	// Database stats endpoint
