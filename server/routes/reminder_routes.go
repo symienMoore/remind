@@ -2,7 +2,6 @@ package routes
 
 import (
 	"remind/server/controllers"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,6 +19,11 @@ func ReminderRoutes(r *gin.Engine) {
 	UserGroup := r.Group("/user")
 	{
 		UserGroup.GET("/")
+	}
+
+	AuthGroup := r.Group("/auth")
+	{
+		AuthGroup.POST("/signup", controllers.RegisterUser)
 	}
 
 	// Database stats endpoint
