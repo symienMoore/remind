@@ -31,3 +31,6 @@ made a small update to the landing page, I need to create a login or sign up for
 and also diagram the flow of the application. I will be rolling my own auth for this
 so I need to catch up on best practices.
   
+### 12-09-2025 
+almost done with auth, just need to get it going client side
+and add middleware
