@@ -6,6 +6,7 @@ import (
 	"remind/server/models"
 	"golang.org/x/crypto/bcrypt"
 	"remind/server/db"
+	"fmt"
 )
 
 
@@ -39,7 +40,7 @@ func LogInUser(c *gin.Context) {
 		c.JSON(500, gin.H{"error": "Failed to generate token"})
 		return
 	}
-
+	fmt.Printf("👉 Got email: %s, password: %s\n", loginRequest.Username, loginRequest.Password)
 	c.JSON(200, gin.H{
 		"message": "Login successful",
 		"token":   token,

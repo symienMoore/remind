@@ -15,8 +15,8 @@ export class Reminder {
     .pipe(
       map((todos: any) =>
         todos.filter((todo: any) =>
-      todo.completed))
-    ).subscribe(x => {
+        todo.completed))
+      ).subscribe(x => {
       console.log(x)
     })
   }
