@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"remind/server/config"
 	"remind/server/db"
 	"remind/server/routes"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -47,7 +48,7 @@ func main() {
 
 	// API routes
 	routes.ReminderRoutes(r)
-	routes.UserRoutes(r)
+	//routes.UserRoutes(r)
 
 	// Health check endpoint
 	r.GET("/ping", func(c *gin.Context) {
@@ -58,7 +59,7 @@ func main() {
 		})
 	})
 
-	// API info endpoint
+	// Need to update this
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "REmind API Server",
@@ -72,7 +73,6 @@ func main() {
 		})
 	})
 
-	// Get port from environment or use default
 	port := "8080"
 	if envPort := os.Getenv("PORT"); envPort != "" {
 		port = envPort

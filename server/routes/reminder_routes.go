@@ -1,11 +1,12 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
 	"remind/server/controllers"
+	"github.com/gin-gonic/gin"
 )
 
 func ReminderRoutes(r *gin.Engine) {
+	// add middleware
 	reminderGroup := r.Group("/reminders")
 	{
 		reminderGroup.GET("/", controllers.GetReminders)
@@ -14,6 +15,17 @@ func ReminderRoutes(r *gin.Engine) {
 		reminderGroup.POST("/", controllers.CreateReminder)
 		reminderGroup.PUT("/:id", controllers.UpdateReminder)
 		reminderGroup.DELETE("/:id", controllers.DeleteReminder)
+	}
+
+	UserGroup := r.Group("/user")
+	{
+		UserGroup.GET("/")
+	}
+
+	AuthGroup := r.Group("/auth")
+	{
+		AuthGroup.POST("/signup", controllers.RegisterUser)
+		AuthGroup.POST("/login", controllers.LogInUser)
 	}
 
 	// Database stats endpoint

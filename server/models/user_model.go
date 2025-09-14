@@ -16,4 +16,5 @@ type User struct {
 	CreatedAt     time.Time  `json:"createdAt" gorm:"autoCreateTime"`
 	UpdatedAt     time.Time  `json:"updatedAt" gorm:"autoUpdateTime"`
 	DeactivatedAt *time.Time `json:"deactivatedAt,omitempty" gorm:"index"`
+	Reminders	  []Reminder `json:"foreignKey:UserId"`
 }

@@ -8,14 +8,15 @@ import { filter, map } from 'rxjs';
 export class Reminder {
   private http = inject(HttpClient);
   constructor() {
-    
+
   }
   getdata = () => {
     this.http.get('https://jsonplaceholder.typicode.com/todos/')
     .pipe(
-      map((todos: any) => todos.filter((todo: any) => 
-      todo.completed))
-    ).subscribe(x => {
+      map((todos: any) =>
+        todos.filter((todo: any) =>
+        todo.completed))
+      ).subscribe(x => {
       console.log(x)
     })
   }
