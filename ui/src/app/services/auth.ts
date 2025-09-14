@@ -17,6 +17,6 @@ export class Auth {
 
   doUserLogin({username, password}: any) {
     return this.http.post("http://localhost:8080/auth/login", {username, password})
-  }
+  } 
 
 }
