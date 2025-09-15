@@ -1,26 +1,126 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+	"remind/server/db"
+	"remind/server/models"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+)
 
 func GetReminders(c *gin.Context) {
-	c.JSON(200, gin.H{"message": "Get reminders endpoint"})
+	var reminders []models.Reminder
+	result := db.DB.Find(&reminders)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, reminders)
 }
 
 func GetReminderByID(c *gin.Context) {
-	id := c.Param("id")
-	c.JSON(200, gin.H{"message": "Get reminder by ID", "id": id})
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		return
+	}
+
+	var reminder models.Reminder
+	result := db.DB.First(&reminder, id)
+	if result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reminder not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, reminder)
 }
 
 func CreateReminder(c *gin.Context) {
-	c.JSON(201, gin.H{"message": "Create reminder endpoint"})
+	var reminder models.Reminder
+	if err := c.ShouldBindJSON(&reminder); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result := db.DB.Create(&reminder)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, reminder)
 }
 
 func UpdateReminder(c *gin.Context) {
-	id := c.Param("id")
-	c.JSON(200, gin.H{"message": "Update reminder", "id": id})
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		return
+	}
+
+	var reminder models.Reminder
+	result := db.DB.First(&reminder, id)
+	if result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reminder not found"})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&reminder); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	db.DB.Save(&reminder)
+	c.JSON(http.StatusOK, reminder)
 }
 
 func DeleteReminder(c *gin.Context) {
-	id := c.Param("id")
-	c.JSON(200, gin.H{"message": "Delete reminder", "id": id})
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		return
+	}
+	var reminder models.Reminder
+	result := db.DB.First(&reminder, id)
+	if result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reminder not found"})
+		return
+	}
+
+	db.DB.Delete(&reminder)
+	c.JSON(http.StatusOK, gin.H{"message": "Reminder deleted"})
+}
+
+func SearchReminders(c *gin.Context) {
+	searchTerm := c.Query("q")
+	if searchTerm == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Search term 'q' is required"})
+		return
+	}
+
+	var reminders []models.Reminder
+	searchPattern := "%" + searchTerm + "%"
+
+	result := db.DB.Where("title ILIKE ? OR description ILIKE ?", searchPattern, searchPattern).Find(&reminders)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, reminders)
+}
+
+func GetDatabaseStats(c *gin.Context) {
+	var count int64
+	db.DB.Model(&models.Reminder{}).Count(&count)
+
+	c.JSON(http.StatusOK, gin.H{
+		"total_reminders": count,
+		"database_url":    "***",
+	})
 }

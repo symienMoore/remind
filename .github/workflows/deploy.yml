@@ -68,6 +68,9 @@ jobs:
             echo "app=remind-api-qa" >> $GITHUB_OUTPUT
           fi
 
+      - name: Authenticate Fly.io
+        run: flyctl auth login --access-token ${{ secrets.FLY_API_TOKEN }}
+
       - name: Deploy API to Fly.io
         run: flyctl deploy --app ${{ steps.env.outputs.app }} --remote-only
         env:
@@ -104,6 +107,9 @@ jobs:
         run: flyctl deploy --app ${{ steps.env.outputs.app }} --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Authenticate Fly.io
+        run: flyctl auth login --access-token ${{ secrets.FLY_API_TOKEN }}
 
       - name: Verify UI deployment
         run: |

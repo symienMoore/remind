@@ -1,0 +1,88 @@
+package controllers
+
+import (
+	"github.com/gin-gonic/gin"
+	"remind/server/auth"
+	"remind/server/models"
+	"golang.org/x/crypto/bcrypt"
+	"remind/server/db"
+	"fmt"
+)
+
+
+func LogInUser(c *gin.Context) {
+	var loginRequest struct {
+		Username string `json:"username" binding:"required"`
+		Password string `json:"password" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&loginRequest); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	var user models.User
+	result := db.DB.Where("username = ?", loginRequest.Username).First(&user)
+	if result.Error != nil {
+		c.JSON(401, gin.H{"error": "Invalid username or password"})
+		return
+	}
+	if !user.IsActive {
+		c.JSON(401, gin.H{"error": "Account is deactivated"})
+		return
+	}
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
+	if err != nil {
+		c.JSON(401, gin.H{"error": "Invalid username or password"})
+		return
+	}
+	token, err := auth.GenerateJWT(user.Username)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to generate token"})
+		return
+	}
+	fmt.Printf("👉 Got email: %s, password: %s\n", loginRequest.Username, loginRequest.Password)
+	c.JSON(200, gin.H{
+		"message": "Login successful",
+		"token":   token,
+		"user":    user,
+	})
+}
+
+
+
+
+func RegisterUser(c *gin.Context) {
+	var user models.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Hash password before storing
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to hash password"})
+		return
+	}
+	user.Password = string(hashedPassword)
+
+	// Store user in database
+	result := db.DB.Create(&user)
+	if result.Error != nil {
+		c.JSON(500, gin.H{"error": result.Error.Error()})
+		return
+	}
+
+	// Generate JWT token
+	token, err := auth.GenerateJWT(user.Username)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to generate token"})
+		return 
+	}
+
+	c.JSON(201, gin.H{
+		"message": "User registered successfully",
+		"token":   token,
+		"user":    user,
+	})
+}
