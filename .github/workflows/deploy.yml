@@ -108,6 +108,9 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
+      - name: Authenticate Fly.io
+        run: flyctl auth login --access-token ${{ secrets.FLY_API_TOKEN }}
+
       - name: Verify UI deployment
         run: |
           sleep 30
